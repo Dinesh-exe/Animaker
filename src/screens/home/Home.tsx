@@ -1,18 +1,15 @@
 import * as React from 'react';
 import * as RN from 'react-native';
 import Sprit from '../../component/Sprit';
-import NewAnimation from '../../component/NewAnimation';
 import AnimationBoard from '../../component/AnimationBoard';
+import AnimationList from '../../component/AnimationList';
 
-const Home = (props: any) => {
-  const [axis, setAxis] = React.useState({x: 0, y: 0});
-  const [motion, setMotion] = React.useState([]);
-
+const Home = () => {
   return (
     <RN.View style={styles.container}>
-      <AnimationBoard axis={(e: any) => setAxis(e)} motions={motion} />
-      <Sprit spritName={'Cat'} xValue={axis.x} yValue={axis.y} />
-      <NewAnimation setMotion={setMotion} />
+      <AnimationBoard />
+      <Sprit />
+      <AnimationList />
     </RN.View>
   );
 };
@@ -31,4 +28,4 @@ const styles = RN.StyleSheet.create({
   },
 });
 
-export default Home;
+export default React.memo(Home);

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as RN from 'react-native';
 import {DraxProvider, DraxView, DraxList} from 'react-native-drax';
-import {ActionContext} from '../../navigation/MyTabs';
+import DropZone from './component/DropZone';
+import {AppContext} from '../../../App';
 
 const Motion = () => {
-  const motion: any = React.useContext(ActionContext);
-  const draggableData = [
+  const appData: any = React.useContext(AppContext);
+  let draggableData = [
     {
       id: 0,
       name: 'Move X by 50',
@@ -41,31 +42,60 @@ const Motion = () => {
     {
       id: 5,
       name: 'Go to random position',
+      actionId: 'random',
+      xActionValue: Math.random() * 100,
+      yActionValue: Math.random() * 100,
     },
     {
       id: 6,
       name: 'Say Hello',
+      actionId: 'hello',
+      actionValue: 10000,
     },
     {
       id: 7,
       name: 'Say Hello for 1 sec',
+      actionId: 'hello',
+      actionValue: 1000,
     },
     {
       id: 8,
       name: 'Increas size',
+      actionId: 'increaseSize',
+      actionValue: 150,
     },
     {
       id: 9,
       name: 'Decrease size',
+      actionId: 'decreaseSize',
+      actionValue: 20,
     },
     {
       id: 10,
       name: 'Repeat',
+      actionId: 'repeat',
+      actionValue: 0,
     },
   ];
 
   const [dragableData, setDragableData] = React.useState(draggableData);
-  const [dropData, setDropData] = React.useState([]);
+
+  React.useEffect(() => {
+    setMotionData();
+  }, []);
+
+  const setMotionData = () => {
+    let data: any = draggableData;
+    appData?.selectedMotion?.map((item: any) => {
+      if (!item?.selected)
+        data = draggableData.filter((objFromA: any) => {
+          return !item?.data.find((objFromB: any) => {
+            return objFromA?.id === objFromB?.id;
+          });
+        });
+    });
+    setDragableData(data);
+  };
 
   const DragUIComponent = React.useCallback(({item, index}: any) => {
     return (
@@ -82,14 +112,6 @@ const Motion = () => {
     );
   }, []);
 
-  const ReceivingZoneUIComponent = React.useCallback(({item, index}: any) => {
-    return (
-      <RN.View style={styles.draggableBox}>
-        <RN.Text style={styles.textStyle}>{item?.name}</RN.Text>
-      </RN.View>
-    );
-  }, []);
-
   const FlatListItemSeparator = () => {
     return <RN.View style={styles.itemSeparator} />;
   };
@@ -99,30 +121,86 @@ const Motion = () => {
     [],
   );
 
-  const dropZone = () => (
-    <DraxView
-      style={styles.receivingZone}
-      removeClippedSubviews
-      onReceiveDragDrop={event => {
-        let selected_item = dragableData[event.dragged.payload];
-        let newReceivingItemList: any = [...dropData];
-        newReceivingItemList.push(selected_item);
-        setDropData(newReceivingItemList);
-        motion.setMotion(newReceivingItemList); // setMotions through context
-        let newDragItemMiddleList = dragableData.filter(
-          (item: any) => item?.id !== selected_item?.id,
-        );
-        setDragableData(newDragItemMiddleList);
-      }}>
-      <RN.FlatList
-        data={dropData}
-        keyExtractor={keyExtractor}
-        renderItem={ReceivingZoneUIComponent}
-        ItemSeparatorComponent={FlatListItemSeparator}
-        removeClippedSubviews
-      />
-    </DraxView>
-  );
+  const renderBtn = (item: any, isTwoBtn: any) => {
+    if (!item?.isEmpty) {
+      return (
+        <RN.TouchableOpacity
+          onPress={() => {
+            let selectedAnimation = appData?.selectedMotion?.map((e: any) => {
+              if (e?.id === item?.id) {
+                return {...e, isEmpty: false, selected: true};
+              } else {
+                return {...e, selected: false};
+              }
+            });
+            appData?.setSelectedMotion(selectedAnimation);
+            setMotionData();
+          }}>
+          <RN.View
+            style={{
+              flex: 0,
+              backgroundColor: 'blue',
+              height: 7 * 6,
+              justifyContent: 'center',
+              alignItems: 'center',
+              borderBottomColor: item?.selected ? 'white' : 'blue',
+              borderBottomWidth: 2,
+              width: isTwoBtn
+                ? RN.Dimensions.get('screen').width / 4.6
+                : RN.Dimensions.get('screen').width / 2.29,
+            }}>
+            <RN.Text style={{color: 'white', fontSize: 9}}>
+              {item?.name}
+            </RN.Text>
+          </RN.View>
+        </RN.TouchableOpacity>
+      );
+    } else {
+      return <></>;
+    }
+  };
+
+  const renderTabs = () => {
+    if (appData?.selectedMotion?.length !== 0)
+      return (
+        <RN.View style={{flex: 1}}>
+          <RN.View>
+            <RN.FlatList
+              data={appData?.selectedMotion}
+              keyExtractor={(item: any) => item?.id}
+              horizontal
+              renderItem={({item}: any) =>
+                renderBtn(
+                  item,
+                  appData?.selectedMotion?.filter((value: any) => {
+                    return value?.isEmpty;
+                  })?.length === 0,
+                )
+              }
+            />
+          </RN.View>
+          <RN.View style={{flex: 1}}>
+            <RN.FlatList
+              data={appData?.selectedMotion}
+              keyExtractor={(item: any) => item?.id}
+              renderItem={({item}: any) => {
+                if (item?.selected) {
+                  return (
+                    <DropZone
+                      data={item}
+                      dragableData={dragableData}
+                      setDragableData={setDragableData}
+                    />
+                  );
+                } else {
+                  return <></>;
+                }
+              }}
+            />
+          </RN.View>
+        </RN.View>
+      );
+  };
 
   return (
     <DraxProvider>
@@ -136,7 +214,7 @@ const Motion = () => {
             removeClippedSubviews
           />
         </RN.View>
-        <RN.View style={styles.receivingContainer}>{dropZone()}</RN.View>
+        <RN.View style={styles.receivingContainer}>{renderTabs()}</RN.View>
       </RN.View>
     </DraxProvider>
   );
@@ -149,14 +227,13 @@ const styles = RN.StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  receivingZone: {
-    flex: 1,
-    borderRadius: 7,
-  },
   draggableBox: {
     borderRadius: 7,
-    padding: 7,
+    padding: 7 * 2,
     backgroundColor: 'blue',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   dragging: {
     opacity: 0.2,

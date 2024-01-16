@@ -3,36 +3,74 @@ import * as RN from 'react-native';
 
 const {height, width} = RN.Dimensions.get('window');
 
-const Sprit = ({spritName, xValue, yValue}: any) => {
+export const SpritRef: any = React.createRef();
+
+const Sprit = () => {
+  const [data, setData] = React.useState([
+    {id: 1, axis: {x: 0, y: 0}, isEmpty: false},
+    {id: 2, axis: {x: 0, y: 0}, isEmpty: true},
+  ]);
+
+  React.useImperativeHandle(SpritRef, () => ({
+    data,
+    setData,
+  }));
+
+  const renderItem = ({item}: any) => {
+    if (item?.id === 1) {
+      return (
+        <RN.View style={styles.card}>
+          <RN.View style={styles.container}>
+            <RN.View style={styles.spritContainer}>
+              <RN.Text style={styles.spritLabel}>Sprit</RN.Text>
+              <RN.View style={styles.spritView}>
+                <RN.Text style={styles.spritText}>{'cat'}</RN.Text>
+              </RN.View>
+            </RN.View>
+
+            <RN.View style={styles.spritContainer}>
+              <RN.Text style={styles.spritLabel}>X</RN.Text>
+              <RN.View style={styles.spritView}>
+                <RN.Text style={styles.spritText}>{item?.axis?.x}</RN.Text>
+              </RN.View>
+            </RN.View>
+
+            <RN.View style={styles.spritContainer}>
+              <RN.Text style={styles.spritLabel}>Y</RN.Text>
+              <RN.View style={styles.spritView}>
+                <RN.Text style={styles.spritText}>{item?.axis?.y}</RN.Text>
+              </RN.View>
+            </RN.View>
+          </RN.View>
+        </RN.View>
+      );
+    } else {
+      return <></>;
+    }
+  };
+
+  const keyExtractor = React.useCallback(
+    (item: any, index: any) => item?.id?.toString(),
+    [],
+  );
+
   return (
-    <RN.View style={styles.card}>
-      <RN.View style={styles.container}>
-        <RN.View style={styles.spritContainer}>
-          <RN.Text style={styles.spritLabel}>Sprit</RN.Text>
-          <RN.View style={styles.spritView}>
-            <RN.Text style={styles.spritText}>{spritName}</RN.Text>
-          </RN.View>
-        </RN.View>
-
-        <RN.View style={styles.spritContainer}>
-          <RN.Text style={styles.spritLabel}>X</RN.Text>
-          <RN.View style={styles.spritView}>
-            <RN.Text style={styles.spritText}>{xValue}</RN.Text>
-          </RN.View>
-        </RN.View>
-
-        <RN.View style={styles.spritContainer}>
-          <RN.Text style={styles.spritLabel}>Y</RN.Text>
-          <RN.View style={styles.spritView}>
-            <RN.Text style={styles.spritText}>{yValue}</RN.Text>
-          </RN.View>
-        </RN.View>
-      </RN.View>
+    <RN.View style={styles.parentContainer}>
+      <RN.FlatList
+        data={data}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        ItemSeparatorComponent={() => <RN.View style={{marginTop: 7}} />}
+        contentContainerStyle={{paddingBottom: 7}}
+      />
     </RN.View>
   );
 };
 
 const styles = RN.StyleSheet.create({
+  parentContainer: {
+    flex: 0,
+  },
   card: {
     flex: 0,
     backgroundColor: 'white',

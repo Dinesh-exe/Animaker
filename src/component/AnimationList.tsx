@@ -1,35 +1,18 @@
-import {useNavigation} from '@react-navigation/native';
 import * as React from 'react';
 import * as RN from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {AppContext} from '../../App';
 
-const AnimationList = ({setMotion}: any) => {
+const AnimationList = () => {
+  const appData: any = React.useContext(AppContext);
   const navigation = useNavigation<any>();
-
-  const data = [
-    {
-      id: 1,
-      image: require('../assets/dog.png'),
-      selected: true,
-      isEmpty: false,
-    },
-    {
-      id: 2,
-      image: '',
-      selected: false,
-      isEmpty: true,
-    },
-  ];
 
   const renderItem = React.useCallback(({item}: any) => {
     if (!item?.isEmpty) {
       return (
         <RN.TouchableOpacity
           onPress={() => {
-            navigation.navigate('Action', {
-              onReceived: (data: any) => {
-                setMotion(data);
-              },
-            });
+            navigation.navigate('Action');
           }}>
           <RN.View style={styles.card}>
             <RN.Image source={item?.image} style={styles.image} />
@@ -41,26 +24,55 @@ const AnimationList = ({setMotion}: any) => {
       );
     } else {
       return (
-        <RN.View style={styles.newCard}>
-          <RN.Text style={{alignSelf: 'center', color: 'black', fontSize: 20}}>
-            +
-          </RN.Text>
-        </RN.View>
+        <RN.TouchableOpacity
+          onPress={() => {
+            let selectedAnimation = appData?.selectedMotion?.map((e: any) => {
+              if (e?.id === item?.id) {
+                return {...e, isEmpty: false};
+              } else {
+                return e;
+              }
+            });
+            appData?.setSelectedMotion(selectedAnimation);
+          }}
+          style={{flex: 1}}>
+          <RN.View style={styles.newCard}>
+            <RN.Text
+              style={{alignSelf: 'center', color: 'black', fontSize: 20}}>
+              +
+            </RN.Text>
+          </RN.View>
+        </RN.TouchableOpacity>
       );
     }
   }, []);
 
+  const keyExtractor = React.useCallback(
+    (item: any, index: any) => item?.id?.toString(),
+    [],
+  );
+
   return (
-    <RN.FlatList
-      data={data}
-      keyExtractor={(item: any) => item?.id}
-      renderItem={renderItem}
-      horizontal
-    />
+    <RN.View style={styles.container}>
+      <RN.FlatList
+        data={appData?.selectedMotion}
+        keyExtractor={keyExtractor}
+        renderItem={renderItem}
+        horizontal
+      />
+    </RN.View>
   );
 };
 
 const styles = RN.StyleSheet.create({
+  container: {
+    flex: 0,
+    backgroundColor: 'white',
+    padding: 7,
+    elevation: 5,
+    borderRadius: 7,
+    marginHorizontal: 7,
+  },
   card: {
     flex: 0,
     backgroundColor: 'white',
@@ -84,7 +96,7 @@ const styles = RN.StyleSheet.create({
   newCard: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 0,
+    flex: 1,
     backgroundColor: 'white',
     elevation: 5,
     borderRadius: 7,
@@ -93,4 +105,4 @@ const styles = RN.StyleSheet.create({
   },
 });
 
-export default AnimationList;
+export default React.memo(AnimationList);

@@ -1,165 +1,73 @@
 import * as React from 'react';
 import * as RN from 'react-native';
-import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import AnimationPoster from './AnimationPoster';
+import {AppContext} from '../../App';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const AnimationBoard = ({axis, motions}: any) => {
-  const [isLayoutReady, setIsLayoutReady] = React.useState(false);
-  const [motion, setMotion] = React.useState([]);
-  const boardLayout = React.useRef({x: 0, y: 0});
-
-  const translateX = useSharedValue(0);
-  const translatey = useSharedValue(0);
-  const rotate = useSharedValue('0deg');
-
-  const context = useSharedValue({x: 0, y: 0});
-
-  React.useEffect(() => {
-    if (motions) {
-      setMotion(motions);
-    }
-  }, [motions]);
-
-  const gesture = Gesture.Pan()
-    .onStart(() => {
-      context.value = {x: translateX.value, y: translatey.value};
-    })
-    .onUpdate(event => {
-      translateX.value = event.translationX + context.value.x;
-      translatey.value = event.translationY + context.value.y;
-    });
-
-  requestAnimationFrame(() => {
-    axis({
-      x: translateX.value.toPrecision(5),
-      y: translatey.value.toPrecision(5),
-    });
-  });
-
-  const rStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {translateX: translateX.value},
-        {translateY: translatey.value},
-        {rotate: rotate.value},
-      ],
-    };
-  });
+const AnimationBoard = () => {
+  let animationPosterRef: any = React.useRef([]);
+  const appData: any = React.useContext(AppContext);
 
   const playAnimation = async () => {
-    if (motion) {
-      motion?.map((item: any) => {
-        switch (item?.actionId) {
-          case 'x':
-            translateX.value = withSequence(
-              withTiming(item?.actionValue ?? 0, {
-                duration: 1000,
-              }),
-            );
-            break;
-          case 'y':
-            translatey.value = withSequence(
-              withTiming(item?.actionValue ?? 0, {
-                duration: 1000,
-              }),
-            );
-            break;
-          case 'rotate':
-            rotate.value = '0deg';
-            rotate.value = withSequence(
-              withTiming(item?.actionValue ?? 0, {duration: 1000}),
-            );
-            break;
-          case 'xy':
-            translateX.value = withSequence(
-              withTiming(item?.xActionValue ?? 0, {
-                duration: 1000,
-              }),
-            );
-            translatey.value = withSequence(
-              withTiming(item?.yActionValue ?? 0, {
-                duration: 1000,
-              }),
-            );
-            break;
-
-          default:
-            break;
-        }
-      });
-    }
+    appData?.selectedMotion?.map((item: any) => {
+      animationPosterRef[item?.id]?.playAnimation();
+    });
   };
 
   const renderResetBtn = () => (
     <RN.TouchableOpacity
-      style={{
-        height: 30,
-        width: 30,
-        backgroundColor: 'blue',
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        top: 10,
-        right: 10,
-      }}
+      style={styles.resetBtn}
       onPress={() => {
-        translateX.value = boardLayout.current.x;
-        translatey.value = boardLayout.current.y;
+        appData?.selectedMotion?.map((item: any) => {
+          animationPosterRef[item?.id]?.resetAnimation();
+        });
       }}>
-      <RN.Text style={{color: 'white'}}>R</RN.Text>
+      <Icon name="stop-outline" size={20} color={'white'} />
     </RN.TouchableOpacity>
   );
 
   const renderPlayBtn = () => (
-    <RN.TouchableOpacity
-      style={{
-        height: 30,
-        width: 30,
-        backgroundColor: 'blue',
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        bottom: 10,
-        right: 10,
-      }}
-      onPress={playAnimation}>
-      <RN.Text style={{color: 'white'}}>S</RN.Text>
+    <RN.TouchableOpacity style={styles.playBtn} onPress={playAnimation}>
+      <Icon name="play-circle-outline" size={20} color={'white'} />
     </RN.TouchableOpacity>
   );
 
+  const renderItem = React.useCallback(({item, index}: any) => {
+    if (!item?.isEmpty) {
+      return (
+        <AnimationPoster
+          data={item}
+          index={index}
+          ref={(animationRef: any) => {
+            animationPosterRef[item?.id] = animationRef;
+          }}
+          key={index}
+        />
+      );
+    } else {
+      return <></>;
+    }
+  }, []);
+
+  const keyExtractor = React.useCallback(
+    (item: any, index: any) => item?.id?.toString(),
+    [],
+  );
+
+  const renderCreature = () => (
+    <RN.FlatList
+      data={appData?.selectedMotion}
+      keyExtractor={keyExtractor}
+      renderItem={renderItem}
+      contentContainerStyle={{flex: 1}}
+    />
+  );
+
   return (
-    <RN.View
-      style={styles.animationBoard}
-      onLayout={e => {
-        if (!isLayoutReady) {
-          boardLayout.current.x = e.nativeEvent.layout.height / 2.5;
-          boardLayout.current.y = e.nativeEvent.layout.width / 2.6;
-          translateX.value = e.nativeEvent.layout.height / 2.5;
-          translatey.value = e.nativeEvent.layout.width / 2.6;
-          setIsLayoutReady(true);
-        }
-      }}>
+    <RN.View style={styles.animationBoard}>
       {renderResetBtn()}
       {renderPlayBtn()}
-      <GestureDetector gesture={gesture}>
-        <Animated.Image
-          source={require('../assets/dog.png')}
-          style={[
-            {
-              height: 50,
-              width: 50,
-            },
-            rStyle,
-          ]}
-        />
-      </GestureDetector>
+      {renderCreature()}
     </RN.View>
   );
 };
@@ -173,6 +81,30 @@ const styles = RN.StyleSheet.create({
     elevation: 5,
     borderRadius: 7,
   },
+  resetBtn: {
+    height: 30,
+    width: 30,
+    backgroundColor: 'blue',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+  },
+  playBtn: {
+    height: 30,
+    width: 30,
+    backgroundColor: 'blue',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    zIndex: 10,
+  },
 });
 
-export default AnimationBoard;
+export default React.memo(AnimationBoard);
