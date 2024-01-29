@@ -1,4 +1,21 @@
 {
   "name": "animaker",
-  "displayName": "animaker"
+  "displayName": "animaker",
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b425a8fe-8849-457c-8f0e-892c4073c853"
+      }
+    },
+    "owner": "dinesh-exe",
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/b425a8fe-8849-457c-8f0e-892c4073c853"
+    },
+    "android": {},
+    "ios": {
+      "jsEngine": "jsc"
+    },
+    "jsEngine": "hermes"
+  }
 }

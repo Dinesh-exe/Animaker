@@ -1,5 +1,4 @@
 import * as React from 'react';
-import * as RN from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import Screens from './src/navigation/Screens';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -13,15 +12,6 @@ function App() {
       name: 'action 1',
       image: require('./src/assets/dog.png'),
       selected: true,
-      isEmpty: false,
-      data: [],
-    },
-    {
-      id: 2,
-      name: 'action 2',
-      image: require('./src/assets/dog.png'),
-      selected: false,
-      isEmpty: true,
       data: [],
     },
   ]);
@@ -34,14 +24,6 @@ function App() {
       isEmpty: false,
       data: [],
     },
-    {
-      id: 2,
-      name: 'action 2',
-      image: require('./src/assets/dog.png'),
-      selected: false,
-      isEmpty: true,
-      data: [],
-    },
   ]);
   const [control, setControl] = React.useState([
     {
@@ -52,14 +34,6 @@ function App() {
       isEmpty: false,
       data: [],
     },
-    {
-      id: 2,
-      name: 'action 2',
-      image: require('./src/assets/dog.png'),
-      selected: false,
-      isEmpty: true,
-      data: [],
-    },
   ]);
   const [event, setEvent] = React.useState([
     {
@@ -68,14 +42,6 @@ function App() {
       image: require('./src/assets/dog.png'),
       selected: true,
       isEmpty: false,
-      data: [],
-    },
-    {
-      id: 2,
-      name: 'action 2',
-      image: require('./src/assets/dog.png'),
-      selected: false,
-      isEmpty: true,
       data: [],
     },
   ]);

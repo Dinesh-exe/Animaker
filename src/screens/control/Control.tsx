@@ -94,43 +94,35 @@ const Control = () => {
     [],
   );
 
-  const renderBtn = (item: any, isTwoBtn: any) => {
-    if (!item?.isEmpty) {
-      return (
-        <RN.TouchableOpacity
-          onPress={() => {
-            let selectedAnimation = appData?.control?.map((e: any) => {
-              if (e?.id === item?.id) {
-                return {...e, isEmpty: false, selected: true};
-              } else {
-                return {...e, selected: false};
-              }
-            });
-            appData?.setControl(selectedAnimation);
-            setMotionData();
+  const renderBtn = ({item}: any) => {
+    return (
+      <RN.TouchableOpacity
+        onPress={() => {
+          let selectedAnimation = appData?.control?.map((e: any) => {
+            if (e?.id === item?.id) {
+              return {...e, selected: true};
+            } else {
+              return {...e, selected: false};
+            }
+          });
+          appData?.setControl(selectedAnimation);
+          setMotionData();
+        }}>
+        <RN.View
+          style={{
+            flex: 0,
+            backgroundColor: 'blue',
+            height: 7 * 6,
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderBottomColor: item?.selected ? 'white' : 'blue',
+            borderBottomWidth: 2,
+            paddingHorizontal: 7 * 2,
           }}>
-          <RN.View
-            style={{
-              flex: 0,
-              backgroundColor: 'blue',
-              height: 7 * 6,
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderBottomColor: item?.selected ? 'white' : 'blue',
-              borderBottomWidth: 2,
-              width: isTwoBtn
-                ? RN.Dimensions.get('screen').width / 4.6
-                : RN.Dimensions.get('screen').width / 2.29,
-            }}>
-            <RN.Text style={{color: 'white', fontSize: 9}}>
-              {item?.name}
-            </RN.Text>
-          </RN.View>
-        </RN.TouchableOpacity>
-      );
-    } else {
-      return <></>;
-    }
+          <RN.Text style={{color: 'white', fontSize: 9}}>{item?.name}</RN.Text>
+        </RN.View>
+      </RN.TouchableOpacity>
+    );
   };
 
   const renderTabs = () => {
@@ -142,14 +134,7 @@ const Control = () => {
               data={appData?.control}
               keyExtractor={(item: any) => item?.id}
               horizontal
-              renderItem={({item}: any) =>
-                renderBtn(
-                  item,
-                  appData?.control?.filter((value: any) => {
-                    return value?.isEmpty;
-                  })?.length === 0,
-                )
-              }
+              renderItem={renderBtn}
             />
           </RN.View>
           <RN.View style={{flex: 1}}>

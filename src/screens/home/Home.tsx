@@ -1,6 +1,5 @@
 import * as React from 'react';
 import * as RN from 'react-native';
-import Sprit from '../../component/Sprit';
 import AnimationBoard from '../../component/AnimationBoard';
 import AnimationList from '../../component/AnimationList';
 
@@ -8,7 +7,6 @@ const Home = () => {
   return (
     <RN.View style={styles.container}>
       <AnimationBoard />
-      <Sprit />
       <AnimationList />
     </RN.View>
   );

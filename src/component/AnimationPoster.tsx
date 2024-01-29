@@ -8,7 +8,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import {SpritRef} from './Sprit';
 
 const AnimationPoster = ({data, index}: any, ref: any) => {
   const translateX = useSharedValue(0);
@@ -50,25 +49,6 @@ const AnimationPoster = ({data, index}: any, ref: any) => {
       translateX.value = event.translationX + context.value.x;
       translatey.value = event.translationY + context.value.y;
     });
-  const [axis, setAxis] = React.useState([]);
-  requestAnimationFrame(() => {
-    let selectedAnimation = SpritRef?.current?.data?.map((e: any) => {
-      if (e?.id === data?.id) {
-        return {
-          ...e,
-          axis: {
-            x: translateX.value.toPrecision(5),
-            y: translatey.value.toPrecision(5),
-          },
-          isEmpty: data?.isEmpty,
-        };
-      } else {
-        return e;
-      }
-    });
-    SpritRef?.current?.setData(selectedAnimation);
-    setAxis(selectedAnimation);
-  });
 
   const animatedViewStyle = useAnimatedStyle(() => {
     return {
@@ -94,10 +74,10 @@ const AnimationPoster = ({data, index}: any, ref: any) => {
   });
 
   const resetAnimation = () => {
-    translateX.value = withTiming(index * 50, {
+    translateX.value = withTiming(0, {
       duration: 1000,
     });
-    translatey.value = withTiming(index * 50, {
+    translatey.value = withTiming(index * 10, {
       duration: 1000,
     });
     rotate.value = '0deg';

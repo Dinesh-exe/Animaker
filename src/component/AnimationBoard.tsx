@@ -33,20 +33,16 @@ const AnimationBoard = () => {
   );
 
   const renderItem = React.useCallback(({item, index}: any) => {
-    if (!item?.isEmpty) {
-      return (
-        <AnimationPoster
-          data={item}
-          index={index}
-          ref={(animationRef: any) => {
-            animationPosterRef[item?.id] = animationRef;
-          }}
-          key={index}
-        />
-      );
-    } else {
-      return <></>;
-    }
+    return (
+      <AnimationPoster
+        data={item}
+        index={index}
+        ref={(animationRef: any) => {
+          animationPosterRef[item?.id] = animationRef;
+        }}
+        key={index}
+      />
+    );
   }, []);
 
   const keyExtractor = React.useCallback(
@@ -74,7 +70,7 @@ const AnimationBoard = () => {
 
 const styles = RN.StyleSheet.create({
   animationBoard: {
-    flex: 0.9,
+    flex: 0.95,
     backgroundColor: 'white',
     padding: 7,
     margin: 7,

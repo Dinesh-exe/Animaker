@@ -2,55 +2,94 @@ import * as React from 'react';
 import * as RN from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {AppContext} from '../../App';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AnimationList = () => {
   const appData: any = React.useContext(AppContext);
   const navigation = useNavigation<any>();
 
-  const renderItem = React.useCallback(({item}: any) => {
-    if (!item?.isEmpty) {
-      return (
-        <RN.TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Action');
-          }}>
-          <RN.View style={styles.card}>
-            <RN.Image source={item?.image} style={styles.image} />
-            <RN.View style={styles.createBtnContainer}>
-              <RN.Text style={styles.createBtnText}>Add Actions</RN.Text>
-            </RN.View>
+  const renderItem = ({item}: any) => {
+    return (
+      <RN.TouchableOpacity
+        onPress={() => {
+          navigation.navigate('Action');
+        }}>
+        <RN.View style={styles.card}>
+          {renderDeleteBtn(item)}
+          <RN.Image source={item?.image} style={styles.image} />
+          <RN.View style={styles.createBtnContainer}>
+            <RN.Text style={styles.createBtnText}>Add Actions</RN.Text>
           </RN.View>
-        </RN.TouchableOpacity>
-      );
-    } else {
-      return (
-        <RN.TouchableOpacity
-          onPress={() => {
-            let selectedAnimation = appData?.selectedMotion?.map((e: any) => {
-              if (e?.id === item?.id) {
-                return {...e, isEmpty: false};
-              } else {
-                return e;
-              }
-            });
-            appData?.setSelectedMotion(selectedAnimation);
-          }}
-          style={{flex: 1}}>
-          <RN.View style={styles.newCard}>
-            <RN.Text
-              style={{alignSelf: 'center', color: 'black', fontSize: 20}}>
-              +
-            </RN.Text>
-          </RN.View>
-        </RN.TouchableOpacity>
-      );
-    }
-  }, []);
+        </RN.View>
+      </RN.TouchableOpacity>
+    );
+  };
+
+  const renderDeleteBtn = (item: any) => {
+    let isRemovable = appData?.selectedMotion?.length > 1;
+    return (
+      <RN.TouchableOpacity
+        onPress={() => {
+          let data = appData?.selectedMotion?.filter(
+            (node: any) => node?.id !== item?.id,
+          );
+          appData?.setSelectedMotion(data);
+        }}
+        style={{
+          backgroundColor: 'blue',
+          padding: 7 / 2,
+          borderRadius: 7 * 7,
+          position: 'absolute',
+          top: 7 / 2,
+          right: 7 / 2,
+          display: isRemovable ? 'flex' : 'none',
+        }}>
+        <Icon name="delete" color={'white'} size={15} />
+      </RN.TouchableOpacity>
+    );
+  };
 
   const keyExtractor = React.useCallback(
     (item: any, index: any) => item?.id?.toString(),
     [],
   );
+
+  const addElementToArray = (item: any, array: Array<any>) => {
+    if (array.includes(item)) {
+      return array.filter(original => item !== original);
+    } else {
+      return [...array, item];
+    }
+  };
+
+  const renderAddButton = () => {
+    return (
+      <RN.TouchableOpacity
+        onPress={() => {
+          let selectedAnimation = appData?.selectedMotion;
+          let newPosition = selectedAnimation.length + 1;
+          let newData = {
+            id: newPosition,
+            name: `action ${newPosition}`,
+            image: require('../assets/dog.png'),
+            selected: false,
+            data: [],
+          };
+          let arr = addElementToArray(newData, appData?.selectedMotion);
+          appData?.setSelectedMotion(arr);
+          appData?.setLook(arr);
+          appData?.setControl(arr);
+          appData?.setEvent(arr);
+        }}
+        style={{flex: 1}}>
+        <RN.View style={styles.newCard}>
+          <RN.Text style={{alignSelf: 'center', color: 'black', fontSize: 20}}>
+            +
+          </RN.Text>
+        </RN.View>
+      </RN.TouchableOpacity>
+    );
+  };
 
   return (
     <RN.View style={styles.container}>
@@ -59,6 +98,10 @@ const AnimationList = () => {
         keyExtractor={keyExtractor}
         renderItem={renderItem}
         horizontal
+        ListFooterComponent={renderAddButton}
+        contentContainerStyle={{
+          flex: appData?.selectedMotion?.length > 2 ? 0 : 1,
+        }}
       />
     </RN.View>
   );
@@ -80,6 +123,7 @@ const styles = RN.StyleSheet.create({
     borderRadius: 7,
     margin: 7,
     minWidth: 80,
+    paddingTop: 7,
   },
   image: {height: 50, width: 50, alignSelf: 'center', marginVertical: 7},
   createBtnContainer: {
