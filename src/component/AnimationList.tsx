@@ -32,6 +32,14 @@ const AnimationList = () => {
               { backgroundColor: item?.shouldPerform ? "blue" : "red" },
             ]}
           >
+            <RN.Text style={styles.createBtnText}>{item?.name}</RN.Text>
+            <RN.View
+              style={{
+                height: 0.5,
+                backgroundColor: "white",
+                marginVertical: 3,
+              }}
+            />
             <RN.Text style={styles.createBtnText}>
               {item?.shouldPerform
                 ? `${item?.data.length} actions`
@@ -85,8 +93,7 @@ const AnimationList = () => {
     return (
       <RN.TouchableOpacity
         onPress={() => {
-          let selectedAnimation = appData?.selectedMotion;
-          let newPosition = selectedAnimation.length + 1;
+          let newPosition = Math.floor(Math.random() * 100 + 1);
           let newData = {
             id: newPosition,
             name: `action ${newPosition}`,
