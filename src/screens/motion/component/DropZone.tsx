@@ -1,14 +1,14 @@
-import * as React from 'react';
-import * as RN from 'react-native';
-import {DraxView} from 'react-native-drax';
-import Icon from 'react-native-vector-icons/AntDesign';
-import {AppContext} from '../../../../App';
+import * as React from "react";
+import * as RN from "react-native";
+import { DraxView } from "react-native-drax";
+import Icon from "react-native-vector-icons/AntDesign";
+import { AppContext } from "../../../../App";
 
-const DropZone = ({data, dragableData, setDragableData}: any) => {
+const DropZone = ({ data, dragableData, setDragableData }: any) => {
   const appData: any = React.useContext(AppContext);
 
   const ReceivingZoneUIComponent = React.useCallback(
-    ({item, index}: any) => {
+    ({ item, index }: any) => {
       return (
         <RN.View style={styles.draggableBox}>
           <RN.Text style={styles.textStyle}>{item?.name}</RN.Text>
@@ -28,13 +28,14 @@ const DropZone = ({data, dragableData, setDragableData}: any) => {
                 }
               });
               appData?.setSelectedMotion(allData);
-            }}>
-            <Icon name="delete" size={15} color={'white'} />
+            }}
+          >
+            <Icon name="delete" size={15} color={"white"} />
           </RN.TouchableOpacity>
         </RN.View>
       );
     },
-    [dragableData, appData?.selectedMotion],
+    [dragableData, appData?.selectedMotion]
   );
 
   const FlatListItemSeparator = () => {
@@ -43,14 +44,14 @@ const DropZone = ({data, dragableData, setDragableData}: any) => {
 
   const keyExtractor = React.useCallback(
     (item: any, index: any) => item?.id?.toString(),
-    [],
+    []
   );
 
   const dropZone = () => (
     <DraxView
       style={styles.receivingZone}
       removeClippedSubviews
-      onReceiveDragDrop={event => {
+      onReceiveDragDrop={(event) => {
         let selected_item = dragableData[event.dragged.payload];
         let newReceivingItemList: any = data?.data;
         newReceivingItemList.push(selected_item);
@@ -66,17 +67,18 @@ const DropZone = ({data, dragableData, setDragableData}: any) => {
         });
         appData?.setSelectedMotion(allData);
         let newDragItemMiddleList = dragableData.filter(
-          (data: any) => data?.id !== selected_item?.id,
+          (data: any) => data?.id !== selected_item?.id
         );
         setDragableData(newDragItemMiddleList);
-      }}>
+      }}
+    >
       <RN.FlatList
         data={data?.data}
         keyExtractor={keyExtractor}
         renderItem={ReceivingZoneUIComponent}
         ItemSeparatorComponent={FlatListItemSeparator}
         removeClippedSubviews
-        style={{marginTop: 7}}
+        style={{ marginTop: 7 }}
       />
     </DraxView>
   );
@@ -91,29 +93,29 @@ const styles = RN.StyleSheet.create({
   draggableBox: {
     borderRadius: 7,
     padding: 7 * 2,
-    backgroundColor: 'blue',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    backgroundColor: "blue",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   dragging: {
     opacity: 0.2,
   },
   hoverDragging: {
-    borderColor: 'magenta',
+    borderColor: "magenta",
     borderWidth: 2,
   },
   receivingContainer: {
     flex: 1,
-    backgroundColor: 'white',
-    height: RN.Dimensions.get('screen').height / 1.4,
+    backgroundColor: "white",
+    height: RN.Dimensions.get("screen").height / 1.4,
   },
   itemSeparator: {
     height: 7,
   },
   draxListContainer: {
     flex: 0.5,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingHorizontal: 7,
     paddingVertical: 7,
     elevation: 5,
@@ -122,7 +124,7 @@ const styles = RN.StyleSheet.create({
   },
   textStyle: {
     fontSize: 12,
-    color: 'white',
+    color: "white",
   },
 });
 
