@@ -15,9 +15,9 @@ const AnimationList = () => {
           navigation.navigate("Action");
           let selectedAnimation = appData?.selectedMotion?.map((e: any) => {
             if (e?.id === item?.id) {
-              return { ...e, selected: true };
+              return { ...e, selected: true, shouldPerform: true };
             } else {
-              return { ...e, selected: false };
+              return { ...e, selected: false, shouldPerform: false };
             }
           });
           appData?.setSelectedMotion(selectedAnimation);
@@ -26,8 +26,17 @@ const AnimationList = () => {
         <RN.View style={styles.card}>
           {renderDeleteBtn(item)}
           <RN.Image source={item?.image} style={styles.image} />
-          <RN.View style={styles.createBtnContainer}>
-            <RN.Text style={styles.createBtnText}>Add Actions</RN.Text>
+          <RN.View
+            style={[
+              styles.createBtnContainer,
+              { backgroundColor: item?.shouldPerform ? "blue" : "red" },
+            ]}
+          >
+            <RN.Text style={styles.createBtnText}>
+              {item?.shouldPerform
+                ? `${item?.data.length} actions`
+                : "Add Actions"}
+            </RN.Text>
           </RN.View>
         </RN.View>
       </RN.TouchableOpacity>
@@ -45,7 +54,7 @@ const AnimationList = () => {
           appData?.setSelectedMotion(data);
         }}
         style={{
-          backgroundColor: "blue",
+          backgroundColor: item?.shouldPerform ? "blue" : "red",
           padding: 7 / 2,
           borderRadius: 7 * 7,
           position: "absolute",
@@ -83,6 +92,7 @@ const AnimationList = () => {
             name: `action ${newPosition}`,
             image: require("../assets/dog.png"),
             selected: false,
+            shouldPerform: false,
             data: [],
           };
           let arr = addElementToArray(newData, appData?.selectedMotion);
@@ -140,7 +150,6 @@ const styles = RN.StyleSheet.create({
   },
   image: { height: 50, width: 50, alignSelf: "center", marginVertical: 7 },
   createBtnContainer: {
-    backgroundColor: "blue",
     borderBottomRightRadius: 7,
     borderBottomLeftRadius: 7,
     padding: 7,
