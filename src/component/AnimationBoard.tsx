@@ -1,8 +1,8 @@
-import * as React from 'react';
-import * as RN from 'react-native';
-import AnimationPoster from './AnimationPoster';
-import {AppContext} from '../../App';
-import Icon from 'react-native-vector-icons/Ionicons';
+import * as React from "react";
+import * as RN from "react-native";
+import AnimationPoster from "./AnimationPoster";
+import { AppContext } from "../../App";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const AnimationBoard = () => {
   let animationPosterRef: any = React.useRef([]);
@@ -21,18 +21,19 @@ const AnimationBoard = () => {
         appData?.selectedMotion?.map((item: any) => {
           animationPosterRef[item?.id]?.resetAnimation();
         });
-      }}>
-      <Icon name="stop-outline" size={20} color={'white'} />
+      }}
+    >
+      <Icon name="stop-outline" size={20} color={"white"} />
     </RN.TouchableOpacity>
   );
 
   const renderPlayBtn = () => (
     <RN.TouchableOpacity style={styles.playBtn} onPress={playAnimation}>
-      <Icon name="play-circle-outline" size={20} color={'white'} />
+      <Icon name="play-circle-outline" size={20} color={"white"} />
     </RN.TouchableOpacity>
   );
 
-  const renderItem = React.useCallback(({item, index}: any) => {
+  const renderItem = React.useCallback(({ item, index }: any) => {
     return (
       <AnimationPoster
         data={item}
@@ -47,7 +48,7 @@ const AnimationBoard = () => {
 
   const keyExtractor = React.useCallback(
     (item: any, index: any) => item?.id?.toString(),
-    [],
+    []
   );
 
   const renderCreature = () => (
@@ -55,7 +56,7 @@ const AnimationBoard = () => {
       data={appData?.selectedMotion}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
-      contentContainerStyle={{flex: 1}}
+      contentContainerStyle={{ flex: 1 }}
     />
   );
 
@@ -71,7 +72,7 @@ const AnimationBoard = () => {
 const styles = RN.StyleSheet.create({
   animationBoard: {
     flex: 0.95,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     padding: 7,
     margin: 7,
     elevation: 5,
@@ -80,11 +81,11 @@ const styles = RN.StyleSheet.create({
   resetBtn: {
     height: 30,
     width: 30,
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
     top: 10,
     right: 10,
     zIndex: 10,
@@ -92,11 +93,11 @@ const styles = RN.StyleSheet.create({
   playBtn: {
     height: 30,
     width: 30,
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
     bottom: 10,
     right: 10,
     zIndex: 10,
